@@ -54,6 +54,27 @@ public class UserController {
     }
     return ResponseEntity.badRequest().build();
   }
+  
+  @RequestMapping(method = RequestMethod.PUT,
+  consumes = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<Integer> modifyUser(@RequestBody User user) {
+    int result = userService.updateUser(user);
+    if (result == 1) {
+      return ResponseEntity.ok().build();
+      }
+    return ResponseEntity.badRequest().build();
+  }
+
+  @RequestMapping(method = RequestMethod.PUT,
+  produces = MediaType.APPLICATION_JSON_VALUE,
+  consumes = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<Integer> deleteUser (@PathVariable("userUid") UUID userUid) {
+    int result = userService.deleteUser(userUid);
+    if (result == 1) {
+      return ResponseEntity.ok().build();
+      }
+    return ResponseEntity.badRequest().build();
+  }
 
   class ErrorMessage {
     String message;
