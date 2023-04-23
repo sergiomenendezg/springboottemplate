@@ -11,7 +11,8 @@ import org.springframework.stereotype.Repository;
 
 import com.sergiomenendez.g.learningspringboot.model.User;
 
-@Repository
+/*
+@Repository*/
 public class FakeDataDao implements UserDao {
 
   private Map<UUID, User> database;
