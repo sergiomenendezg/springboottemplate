@@ -45,10 +45,29 @@ public class UserController {
         .body(new ErrorMessage("The user " + userUid + "was not found"));
   }
 
-  @RequestMapping(method = RequestMethod.POST,
-    consumes = MediaType.APPLICATION_JSON_VALUE)
+  @RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<Integer> insertNewUser(@RequestBody User user) {
     int result = userService.insertUser(user);
+    if (result == 1) {
+      return ResponseEntity.ok().build();
+    }
+    return ResponseEntity.badRequest().build();
+  }
+
+  @RequestMapping(method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE, path = "{userUid}")
+  public ResponseEntity<Integer> updateUser(@PathVariable("userUid") UUID userUid,
+      @RequestBody User user) {
+    user.setUserUid(userUid);
+    int result = userService.updateUser(user);
+    if (result == 1) {
+      return ResponseEntity.ok().build();
+    }
+    return ResponseEntity.badRequest().build();
+  }
+
+  @RequestMapping(method = RequestMethod.DELETE, consumes = MediaType.APPLICATION_JSON_VALUE, path = "{userUid}")
+  public ResponseEntity<Integer> deleteUSer(@PathVariable("userUid") UUID userUid) {
+    int result = userService.removeUser(userUid);
     if (result == 1) {
       return ResponseEntity.ok().build();
     }
