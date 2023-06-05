@@ -9,6 +9,8 @@ import java.util.UUID;
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -17,6 +19,7 @@ import com.sergiomenendez.g.learningspringboot.model.User;
 import com.sergiomenendez.g.learningspringboot.model.User.Gender;
 
 @Repository
+@ConditionalOnProperty(name = "data.source", havingValue = "mysql")
 public class MSDataDao implements UserDao {
 
   private final String TABLE_NAME = "users";

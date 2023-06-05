@@ -16,6 +16,8 @@
 	<description>Demo project for Spring Boot</description>
 	<properties>
 		<java.version>18</java.version>
+		<resteasy.version>4.7.9.Final</resteasy.version>
+		<resteasy-client.version>4.7.2.Final</resteasy-client.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -45,6 +47,30 @@
 			<artifactId>mysql-connector-java</artifactId>
 			<version>8.0.30</version>
 	</dependency>
+	<!-- https://mvnrepository.com/artifact/org.jboss.resteasy/resteasy-client -->
+ 
+				<dependency>
+            <groupId>org.jboss.resteasy</groupId>
+            <artifactId>resteasy-core</artifactId>
+						<version>${resteasy.version}</version>
+        </dependency>
+      <dependency>
+        <groupId>org.jboss.resteasy</groupId>
+        <artifactId>resteasy-client</artifactId>
+        <version>${resteasy-client.version}</version>
+    </dependency>
+
+    <dependency>
+        <groupId>javax.servlet</groupId>
+        <artifactId>javax.servlet-api</artifactId>
+        <version>4.0.1</version>
+    </dependency>
+	 <dependency>
+			<groupId>javax.activation</groupId>
+			<artifactId>activation</artifactId>
+			<version>1.1.1</version>
+	</dependency>
+
 	</dependencies>
 
 	<build>

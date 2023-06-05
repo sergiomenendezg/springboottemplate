@@ -7,12 +7,14 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Repository;
 
 import com.sergiomenendez.g.learningspringboot.model.User;
 
-/*
-@Repository*/
+@Repository
+@ConditionalOnProperty(name = "data.source", havingValue = "variable")
 public class FakeDataDao implements UserDao {
 
   private Map<UUID, User> database;
