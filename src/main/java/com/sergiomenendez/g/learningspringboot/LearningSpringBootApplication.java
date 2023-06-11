@@ -13,12 +13,9 @@ import org.springframework.context.annotation.ComponentScan;
 @EnableAutoConfiguration
 public class LearningSpringBootApplication implements ApplicationRunner {
 
-	@Value("${test}")
-	private String test;
-
 	@Override
 	public void run(ApplicationArguments args) throws Exception {
-		System.out.println("****************************" + test);
+		System.out.println("**** INIT ****");
 	}
 
 	public static void main(String[] args) {
