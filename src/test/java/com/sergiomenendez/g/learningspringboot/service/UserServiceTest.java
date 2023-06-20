@@ -42,8 +42,8 @@ public class UserServiceTest {
 
     ArrayList<User> users = new ArrayList<>();
     users.add(user);
-    when(fakeDataDao.selectAllUsers()).thenReturn(users);
-    List<User> allUsers = userService.getAllUsers();
+    when(fakeDataDao.selectAllUsers(Optional.empty())).thenReturn(users);
+    List<User> allUsers = userService.getAllUsers("");
     assertThat(allUsers).hasSize(1);
 
     User newUser = allUsers.get(0);

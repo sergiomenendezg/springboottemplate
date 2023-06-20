@@ -1,10 +1,12 @@
 package com.sergiomenendez.g.learningspringboot.controller;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
@@ -13,12 +15,16 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.google.protobuf.Option;
 import com.sergiomenendez.g.learningspringboot.model.User;
+import com.sergiomenendez.g.learningspringboot.model.User.Gender;
 import com.sergiomenendez.g.learningspringboot.service.UserService;
 
 @RestController
+@ConditionalOnProperty(name = "data.controller", havingValue = "springboot")
 @RequestMapping(path = "/api/v1/users")
 public class UserController {
 
@@ -30,8 +36,8 @@ public class UserController {
   }
 
   @RequestMapping(method = RequestMethod.GET)
-  public List<User> fetchUsers() {
-    return userService.getAllUsers();
+  public List<User> fetchUsers(@RequestParam String gender) {
+    return userService.getAllUsers(gender);
   }
 
   @RequestMapping(method = RequestMethod.GET, path = "{userUid}")
@@ -65,7 +71,7 @@ public class UserController {
     return ResponseEntity.badRequest().build();
   }
 
-  @RequestMapping(method = RequestMethod.DELETE, consumes = MediaType.APPLICATION_JSON_VALUE, path = "{userUid}")
+  @RequestMapping(method = RequestMethod.DELETE, path = "{userUid}")
   public ResponseEntity<Integer> deleteUSer(@PathVariable("userUid") UUID userUid) {
     int result = userService.removeUser(userUid);
     if (result == 1) {

@@ -5,9 +5,10 @@ import java.util.Optional;
 import java.util.UUID;
 
 import com.sergiomenendez.g.learningspringboot.model.User;
+import com.sergiomenendez.g.learningspringboot.model.User.Gender;
 
 public interface UserDao {
-  List<User> selectAllUsers();
+  List<User> selectAllUsers(Optional<Gender> gender);
 
   Optional<User> selectUserByUid(UUID userUid);
 

@@ -7,8 +7,10 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.google.protobuf.Option;
 import com.sergiomenendez.g.learningspringboot.dao.UserDao;
 import com.sergiomenendez.g.learningspringboot.model.User;
+import com.sergiomenendez.g.learningspringboot.model.User.Gender;
 
 @Service
 public class UserService {
@@ -20,8 +22,13 @@ public class UserService {
     this.userDao = userDao;
   }
 
-  public List<User> getAllUsers() {
-    return userDao.selectAllUsers();
+  public List<User> getAllUsers(String gender) {
+    if (gender != null && gender != "") {
+      Gender g = Gender.valueOf(gender);
+      Optional<Gender> value = Optional.of(g);
+      return userDao.selectAllUsers(value);
+    }
+    return userDao.selectAllUsers(Optional.empty());
   }
 
   public Optional<User> getUser(UUID userUid) {
@@ -43,7 +50,7 @@ public class UserService {
   }
 
   public int insertUser(User user) {
-    UUID uid = UUID.randomUUID();
+    UUID uid = user.getUserUid() == null ? UUID.randomUUID() : user.getUserUid();
     user.setUserUid(uid);
     return userDao.insertUser(uid, user);
   }

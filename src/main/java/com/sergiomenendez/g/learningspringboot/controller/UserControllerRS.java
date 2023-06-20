@@ -1,42 +1,50 @@
 package com.sergiomenendez.g.learningspringboot.controller;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.sergiomenendez.g.learningspringboot.model.User;
+import com.sergiomenendez.g.learningspringboot.model.User.Gender;
 import com.sergiomenendez.g.learningspringboot.service.UserService;
 
-/*@Path("/api/v1/users")*/
+@RestController
+@ConditionalOnProperty(name = "data.controller", havingValue = "reasteasy")
+@Path("/api/v1/users")
 public class UserControllerRS {
 
+  @Autowired
   private UserService userService;
 
-  @Autowired
   public UserControllerRS(UserService userService) {
     this.userService = userService;
   }
 
   @GET
   @Produces(MediaType.APPLICATION_JSON)
-  public List<User> fetchUsers() {
-    return userService.getAllUsers();
+  public List<User> fetchUsers(@DefaultValue("") @QueryParam("gender") String gender) {
+    return userService.getAllUsers(gender);
   }
 
   @GET
@@ -81,7 +89,7 @@ public class UserControllerRS {
   @DELETE
   @Consumes(MediaType.APPLICATION_JSON)
   @Path("{userUid}")
-  public Response deleteUSer(@PathVariable("userUid") UUID userUid) {
+  public Response deleteUser(@PathVariable("userUid") UUID userUid) {
     int result = userService.removeUser(userUid);
     if (result == 1) {
       return Response.ok().build();

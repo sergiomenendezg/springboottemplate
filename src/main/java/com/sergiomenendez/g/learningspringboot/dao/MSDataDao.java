@@ -18,6 +18,8 @@ import org.springframework.stereotype.Repository;
 import com.sergiomenendez.g.learningspringboot.model.User;
 import com.sergiomenendez.g.learningspringboot.model.User.Gender;
 
+import jakarta.ws.rs.GET;
+
 @Repository
 @ConditionalOnProperty(name = "data.source", havingValue = "mysql")
 public class MSDataDao implements UserDao {
@@ -41,7 +43,7 @@ public class MSDataDao implements UserDao {
   }
 
   @Override
-  public List<User> selectAllUsers() {
+  public List<User> selectAllUsers(Optional<Gender> gender) {
     return jdbcTemplate.query("select * from " + TABLE_NAME,
         (rs, rowNum) -> this.mapToUser(rs));
   }

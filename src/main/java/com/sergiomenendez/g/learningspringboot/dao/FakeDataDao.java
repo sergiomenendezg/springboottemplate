@@ -6,12 +6,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Repository;
 
 import com.sergiomenendez.g.learningspringboot.model.User;
+import com.sergiomenendez.g.learningspringboot.model.User.Gender;
 
 @Repository
 @ConditionalOnProperty(name = "data.source", havingValue = "variable")
@@ -28,7 +30,14 @@ public class FakeDataDao implements UserDao {
   }
 
   @Override
-  public List<User> selectAllUsers() {
+  public List<User> selectAllUsers(Optional<Gender> gender) {
+    if (gender.isPresent()) {
+      return new ArrayList<>(database.entrySet()
+          .stream()
+          .filter(ent -> ent.getValue().getGender().equals(gender.get()))
+          .map(Map.Entry::getValue)
+          .collect(Collectors.toList()));
+    }
     return new ArrayList<>(database.values());
   }
 
