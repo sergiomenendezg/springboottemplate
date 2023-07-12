@@ -1,16 +1,18 @@
 package com.sergiomenendez.g.learningspringboot.service;
 
+import static java.util.Objects.requireNonNull;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import com.google.protobuf.Option;
 import com.sergiomenendez.g.learningspringboot.dao.UserDao;
 import com.sergiomenendez.g.learningspringboot.model.User;
 import com.sergiomenendez.g.learningspringboot.model.User.Gender;
+
+import jakarta.ws.rs.NotFoundException;
 
 @Service
 public class UserService {
@@ -32,21 +34,31 @@ public class UserService {
   }
 
   public Optional<User> getUser(UUID userUid) {
-    return userDao.selectUserByUid(userUid);
+    Optional<User> user = userDao.selectUserByUid(userUid);
+    return user;
   }
 
   public int updateUser(User user) {
     Optional<User> optionalUser = userDao.selectUserByUid(user.getUserUid());
     if (optionalUser.isPresent())
       return userDao.updateUser(user);
-    return -1;
+    throw new NotFoundException("User " + user.getUserUid() + " not found");
   }
 
-  public int removeUser(UUID userUid) {
-    Optional<User> optionalUser = userDao.selectUserByUid(userUid);
-    if (optionalUser.isPresent())
-      return userDao.deleteUserByUid(userUid);
-    return -1;
+  public int removeUser(UUID userUid) throws NotFoundException {
+    UUID uuid = userDao.selectUserByUid(userUid)
+        .map(User::getUserUid)
+        .orElseThrow(() -> new NotFoundException("User " + userUid + " not found"));
+    return userDao.deleteUserByUid(uuid);
+  }
+
+  private void validateUser(User user) {
+    requireNonNull(user.getFirstName(), "First name required");
+    requireNonNull(user.getLastName(), "Last name required");
+    requireNonNull(user.getAge(), "Age required");
+    requireNonNull(user.getEmail(), "Email required");
+    // validate email
+    requireNonNull(user.getGender(), "Gender required");
   }
 
   public int insertUser(User user) {

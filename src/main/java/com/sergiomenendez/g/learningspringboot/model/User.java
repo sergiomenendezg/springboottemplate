@@ -4,6 +4,11 @@ import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
+
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class User {
 
@@ -12,10 +17,18 @@ public class User {
   }
 
   private UUID userUid;
+  @NotNull
   private String firstName;
+  @NotNull
   private String lastName;
+  @NotNull
   private Gender gender;
+  @NotNull
+  @Max(value = 112)
+  @Min(value = 0)
   private Integer age;
+  @NotNull
+  @Email
   private String email;
 
   public User(UUID userUid, String firstName, String lastName, Gender gender, Integer age, String email) {

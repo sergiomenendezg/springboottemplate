@@ -23,6 +23,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import com.sergiomenendez.g.learningspringboot.model.User;
 import com.sergiomenendez.g.learningspringboot.model.User.Gender;
 
+import jakarta.ws.rs.NotFoundException;
+
 public interface UserResourceV1 {
 
   @GET
@@ -32,7 +34,7 @@ public interface UserResourceV1 {
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   @Path("{userUid}")
-  public User fetchUser(@PathParam("userUid") UUID userUid);
+  public User fetchUser(@PathParam("userUid") UUID userUid) throws NotFoundException;
 
   @POST
   @Produces(MediaType.APPLICATION_JSON)

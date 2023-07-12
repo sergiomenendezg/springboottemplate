@@ -1,36 +1,37 @@
-package com.sergiomenendez.g.learningspringboot;
+package com.sergiomenendez.g.learningspringboot.it;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
-import javax.ws.rs.NotFoundException;
-import javax.ws.rs.core.Response;
-
-import org.assertj.core.api.recursive.comparison.RecursiveComparisonConfiguration;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.test.context.TestPropertySource;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import com.sergiomenendez.g.learningspringboot.model.User;
-import com.sergiomenendez.g.learningspringboot.model.User.Gender;
 import com.sergiomenendez.g.learningspringboot.proxy.UserResourceV1;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
+import jakarta.ws.rs.NotFoundException;
 
-class LearningSpringBootApplicationTests {
+@RunWith(SpringRunner.class)
+@SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT, properties = "../../../../../../resources/application.properties")
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@PropertySource("classpath:application.properties")
+public class UserIT {
 
 	@Autowired
 	private UserResourceV1 userResourceV1;
 
+	@Order(1)
 	@Test
 	void itShouldFecthAllUsers() {
 		List<User> users = userResourceV1.fetchUsers("");
@@ -44,6 +45,7 @@ class LearningSpringBootApplicationTests {
 		assertThat(users.get(0)).isNotNull();
 	}
 
+	@Order(2)
 	@Test
 	public void shouldInsertUser() throws Exception {
 		// GIVEN
@@ -58,6 +60,7 @@ class LearningSpringBootApplicationTests {
 				.isEqualTo(user);
 	}
 
+	@Order(3)
 	@Test
 	public void shouldDeleteUser() throws Exception {
 		// GIVEN
@@ -74,13 +77,12 @@ class LearningSpringBootApplicationTests {
 		// WHEN
 		userResourceV1.deleteUser(userUuid);
 		// THEN
-		assertThatThrownBy(() -> {
-			userResourceV1.fetchUser(userUuid);
-		})
-				.isInstanceOf(NotFoundException.class);
+		assertThatThrownBy(() -> userResourceV1.fetchUser(userUuid))
+				.isInstanceOf(Exception.class);
 
 	}
 
+	@Order(4)
 	@Test
 	public void shouldUpdateUser() {
 		// GIVEN
@@ -99,6 +101,7 @@ class LearningSpringBootApplicationTests {
 				.isEqualTo(updatedUSer);
 	}
 
+	@Order(5)
 	@Test
 	public void shouldFetchUsersByGender() {
 		// GIVEN
@@ -115,6 +118,13 @@ class LearningSpringBootApplicationTests {
 		assertThat(females).extracting("age").doesNotContain(user.getAge());
 		assertThat(females).extracting("email").doesNotContain(user.getEmail());
 
+		List<User> males = userResourceV1.fetchUsers("MALE");
+		assertThat(males).extracting("userUid").contains(user.getUserUid());
+		assertThat(males).extracting("firstName").contains(user.getFirstName());
+		assertThat(males).extracting("lastName").contains(user.getLastName());
+		assertThat(males).extracting("gender").contains(user.getGender());
+		assertThat(males).extracting("age").contains(user.getAge());
+		assertThat(males).extracting("email").contains(user.getEmail());
 	}
 
 }

@@ -7,10 +7,8 @@ import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,11 +16,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.google.protobuf.Option;
 import com.sergiomenendez.g.learningspringboot.model.User;
-import com.sergiomenendez.g.learningspringboot.model.User.Gender;
 import com.sergiomenendez.g.learningspringboot.service.UserService;
 
+import jakarta.validation.Valid;
+import jakarta.ws.rs.NotFoundException;
+
+@Validated
 @RestController
 @ConditionalOnProperty(name = "data.controller", havingValue = "springboot")
 @RequestMapping(path = "/api/v1/users")
@@ -36,48 +36,35 @@ public class UserController {
   }
 
   @RequestMapping(method = RequestMethod.GET)
-  public List<User> fetchUsers(@RequestParam String gender) {
+  public List<User> fetchUsers(@RequestParam(required = false) String gender) {
     return userService.getAllUsers(gender);
   }
 
   @RequestMapping(method = RequestMethod.GET, path = "{userUid}")
-  public ResponseEntity<?> fetchUser(@PathVariable("userUid") UUID userUid) {
-    Optional<User> user = userService.getUser(userUid);
-    if (user.isPresent()) {
-      return ResponseEntity.ok(user.get());
-    }
-    return ResponseEntity
-        .status(HttpStatus.NOT_FOUND)
-        .body(new ErrorMessage("The user " + userUid + "was not found"));
+  public User fetchUser(@PathVariable("userUid") UUID userUid) throws NotFoundException {
+    User user = userService.getUser(userUid)
+        .orElseThrow(() -> {
+          return new NotFoundException("User " + userUid + " not found");
+        });
+    return user;
   }
 
   @RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<Integer> insertNewUser(@RequestBody User user) {
-    int result = userService.insertUser(user);
-    if (result == 1) {
-      return ResponseEntity.ok().build();
-    }
-    return ResponseEntity.badRequest().build();
+  public void insertNewUser(@Valid @RequestBody User user) {
+    userService.insertUser(user);
   }
 
   @RequestMapping(method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE, path = "{userUid}")
-  public ResponseEntity<Integer> updateUser(@PathVariable("userUid") UUID userUid,
+  public void updateUser(@PathVariable("userUid") UUID userUid,
       @RequestBody User user) {
     user.setUserUid(userUid);
-    int result = userService.updateUser(user);
-    if (result == 1) {
-      return ResponseEntity.ok().build();
-    }
-    return ResponseEntity.badRequest().build();
+    userService.updateUser(user);
+
   }
 
   @RequestMapping(method = RequestMethod.DELETE, path = "{userUid}")
-  public ResponseEntity<Integer> deleteUSer(@PathVariable("userUid") UUID userUid) {
-    int result = userService.removeUser(userUid);
-    if (result == 1) {
-      return ResponseEntity.ok().build();
-    }
-    return ResponseEntity.badRequest().build();
+  public void deleteUser(@PathVariable("userUid") UUID userUid) throws NotFoundException {
+    userService.removeUser(userUid);
   }
 
   class ErrorMessage {
